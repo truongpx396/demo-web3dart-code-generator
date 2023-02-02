@@ -1,6 +1,6 @@
 # Demo Web3Dart Code Generator
 
-A new Flutter project.
+This simple project is to show how to work with Blockchain SmartContracts using web3dart code generator.
 
 ## Getting Started
 
