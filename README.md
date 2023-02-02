@@ -1,4 +1,4 @@
-# test_smartcontract
+# Demo Web3Dart Code Generator
 
 A new Flutter project.
 
