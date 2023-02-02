@@ -12,6 +12,20 @@ A few resources to get you started if this is your first Flutter project:
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
 ```dart
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  web_socket_channel: ^2.0.0
+  web3dart: ^2.6.1
+  url_launcher: ^6.0.0-nullsafety
+
+dev_dependencies:
+  build_runner: ^2.1.8
+  web3dart_builders: ^0.0.2
+```
+
+```dart
 String web3HttpUrl = "https://nd-964-***-***.p2pify.com/***/";
 String web3RdpUrl = "wss://ws-nd-964-***-***.p2pify.com/***/";
 
