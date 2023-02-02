@@ -12,6 +12,17 @@ A few resources to get you started if this is your first Flutter project:
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
 ```dart
+String web3HttpUrl = "https://nd-964-***-***.p2pify.com/***/";
+String web3RdpUrl = "wss://ws-nd-964-***-***.p2pify.com/***/";
+
+String walletPrivateKey = "YOUR_TEST_WALLET_PRIVATE_KEY";
+String tokenContractAddress = "TOKEN_CONTRACT_ADDRESS";
+String recipientAddress =
+    "ADDRESS_TO_TEST_TRANSFER_TO";// Address to send coins, tokens to
+```
+
+
+```dart
 import 'package:web3dart/web3dart.dart';
 
 import '../contracts/token/TokenContract.g.dart';
