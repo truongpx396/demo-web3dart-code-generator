@@ -1,6 +1,6 @@
 # Demo Web3Dart Code Generator
 
-This simple project is to show how to work with Blockchain SmartContracts using web3dart code generator.
+This simple project is to show how to work with Blockchain SmartContracts using `Web3Dart Code Generator`.
 
 ## Installing dependencies
 
@@ -61,10 +61,10 @@ Using your own test `walletPrivateKey` and `recipientAddress` to test interactio
 
 For `tokenContractAddress` you can try with following deployed Token Contracts, or use your own Token Contracts deployed on `BSC Testnet`.
 
-- BUSD: 0x69264a1a4fe2fbbc0a1c905f5d79f870931e3d69
-- USDT: 0xf728066c846518417d2123d06bfbeeffe723387b
-- ETH: 0xe35ec1d0cd973b313b6861d526488fd551112777
-- Dai: 0xb6a15e5e795326306e9a8bc9611173cafb99dd37
+- `BUSD:` 0x69264a1a4fe2fbbc0a1c905f5d79f870931e3d69
+- `USDT:` 0xf728066c846518417d2123d06bfbeeffe723387b
+- `ETH:` 0xe35ec1d0cd973b313b6861d526488fd551112777
+- `DAI:` 0xb6a15e5e795326306e9a8bc9611173cafb99dd37
 
 ## Initializing TokenContract instances
 
@@ -84,7 +84,6 @@ Using `web3Client` and `token contract address` to create a certain `TokenContac
 
 ```dart
 import 'package:web3dart/web3dart.dart';
-
 import '../contracts/token/TokenContract.g.dart';
 
 TokenContract getTokenContract(String contracAddress) {
@@ -95,7 +94,108 @@ TokenContract getTokenContract(String contracAddress) {
   }
   
 ```
+## Interacting with SmartContracts
 
+### Working with Native Coins
+
+Native coins are coins tied to blockchain network (that helps fueling every actitvities on network like incentivizing network nodes, charging fees on transactions...), Every blockchain network has its own native coins, For BCS Blockchain (Binance Smart Chain) is BNB coin, For Ethereum Blockchain is ETH coin....
+
+#### Get native balance of certain user wallet address.
+
+```dart
+import 'dart:async';
+import 'package:web3dart/web3dart.dart';
+import '../contracts/token/TokenContract.g.dart';
+
+Future<double> getNativeBalance(String userAddress) async {
+    var weiBalance =
+        (await _web3Client.getBalance(EthereumAddress.fromHex(userAddress)))
+            .getInWei;
+    return CustomNumberFormatter.fromWeiToEthFormatted(weiBalance);
+  }
+```
+
+#### Send native coins to certain address and listen to transfer completion event.
+
+```dart
+Future<String> transferNativeCoin(double amount, String toAddress,
+      Function(String, String, double) onTransferCompleted) async {
+    var transactionHash = await _web3Client.sendTransaction(
+        _userWalletCredential,
+        Transaction(
+            to: EthereumAddress.fromHex(toAddress),
+            maxGas: 100000,
+            value: EtherAmount.inWei(
+                CustomNumberFormatter.fromDoubleEthToWei(amount))),
+        chainId: 97);
+        
+    //This periodically checks to see if certain transaction successfully processed
+    reTryCheckingTransactionResult(
+        web3Client: _web3Client,
+        transactionHash: transactionHash,
+        onTransactionSuccess: (receipt) {
+          onTransferCompleted.call(
+              _userWalletCredential.address.toString(), toAddress, amount);
+        });
+
+    return transactionHash;
+  }
+```
+
+### Working with Tokens
+
+Tokens are kind of special deployed smart contract, that represent certain crypto currency on network. Each token is specified by one respective smart contract.
+
+#### Get token symbol.
+
+```dart
+Future<String> getTokenSymbol(String tokenContractAddress) async {
+    var tokenContract = getTokenContract(tokenContractAddress);
+    return await tokenContract.symbol();
+  }
+```
+#### Get token balance.
+
+```dart
+Future<double> getTokenBalance(
+      String userAddress, String tokenContractAddress) async {
+    var tokenContract = getTokenContract(tokenContractAddress);
+    var weiBalance =
+        await tokenContract.balanceOf(EthereumAddress.fromHex(userAddress));
+    return CustomNumberFormatter.fromWeiToEthFormatted(weiBalance);
+  }
+```
+#### Transfer token and listen to transfer completion event.
+
+```dart
+Future<String> transferToken(
+      String tokenContractAddress,
+      double amount,
+      String toAddress,
+      Function(String, String, double) onTransferCompleted) async {
+    var tokenContract = getTokenContract(tokenContractAddress);
+
+    var recipientAddress = EthereumAddress.fromHex(toAddress);
+    var amountToSend = CustomNumberFormatter.fromDoubleEthToWei(amount);
+
+    //This listens to transferEvents from tokenContract to know when tokentransfer completed
+    _tokenTransferSub = tokenContract.transferEvents().listen((event) {
+      if (event.from == _userWalletCredential.address &&
+          event.to == recipientAddress &&
+          event.value == amountToSend) {
+        onTransferCompleted.call(
+            _userWalletCredential.address.toString(),
+            recipientAddress.toString(),
+            CustomNumberFormatter.fromWeiToEthFormatted(amountToSend));
+        _tokenTransferSub.cancel();
+      }
+    });
+
+    //This will return transactionHash
+    return await tokenContract.transfer(recipientAddress, amountToSend,
+        credentials: _userWalletCredential);
+  }
+```
 
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
