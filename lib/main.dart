@@ -3,8 +3,9 @@ import 'package:test_smartcontract/config_env.dart';
 import 'package:test_smartcontract/repo/tokens_repo.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web_socket_channel/io.dart';
-import 'utils/contract_utils.dart';
 import 'package:http/http.dart';
+
+import 'utils/contract_utils.dart';
 
 // Running below command in Terminal for web3dart_builders to generate .g.dart from .abi.json files
 // flutter pub run build_runner build --delete-conflicting-outputs
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Visibility(
               visible: _currentTransactionHash != "" &&
                   _currentTransactionHash != "submitting...",
-              child: TextButton(
+              child: OutlinedButton(
                   onPressed: () {
                     exploreTransaction(_currentTransactionHash);
                   },
@@ -123,23 +124,22 @@ class _MyHomePageState extends State<MyHomePage> {
           _transferResult = "...";
           setState(() {});
 
-          _currentTransactionHash = await _tokensRepo
-              .transferNativeCoin(0.005, _recipientAddress, (from, to, amount) {
-            _transferResult =
-                ">>>>>>> Transfer Completed! {FROM}: $from {TO}: $to {AMOUNT}: $amount";
-            debugPrint(_transferResult);
-            _loadWalletInfo();
-          });
-
-          // _currentTransactionHash = await _tokensRepo.transferToken(
-          //     _tokenContractAddress,
-          //     50.55,
-          //     _receipientAddress, (from, to, amount) {
+          // _currentTransactionHash = await _tokensRepo
+          //     .transferNativeCoin(0.005, _recipientAddress, (from, to, amount) {
           //   _transferResult =
-          //       ">>>>>>> TransferCompleted! From: $from To: $to Amount: $amount";
+          //       ">>>>>>> Transfer Completed! {FROM}: $from {TO}: $to {AMOUNT}: $amount BNB";
           //   debugPrint(_transferResult);
           //   _loadWalletInfo();
           // });
+
+          _currentTransactionHash = await _tokensRepo
+              .transferToken(_tokenContractAddress, 50.55, _recipientAddress,
+                  (from, to, amount) {
+            _transferResult =
+                " << TransferCompleted! >> {FROM}: $from {TO}: $to {AMOUNT}: $amount $_tokenSymbol";
+            debugPrint(_transferResult);
+            _loadWalletInfo();
+          });
 
           _transferResult = "confirming...";
           setState(() {});

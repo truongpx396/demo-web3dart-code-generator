@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:test_smartcontract/utils/contract_utils.dart';
 import 'package:web3dart/web3dart.dart';
-
 import '../contracts/token/TokenContract.g.dart';
 import '../utils/custom_number_formatter.dart';
 
