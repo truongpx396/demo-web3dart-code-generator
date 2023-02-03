@@ -2,6 +2,8 @@
 
 This simple project is to show how to work with Blockchain SmartContracts using `Web3Dart Code Generator`.
 
+![](https://github.com/truongpx396/demo-web3dart-code-generator/blob/master/images/test_result.png)
+
 ## Installing dependencies
 
 A few dependencies need to be installed:
